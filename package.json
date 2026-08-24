@@ -1,0 +1,45 @@
+{
+  "name": "@nerdlab-dev/crm-mcp",
+  "version": "0.1.0",
+  "description": "Installer for Nerdboard's CRM remote MCP — run CRM campaigns for your Cafe24 store from Claude Code and Codex CLI",
+  "keywords": [
+    "mcp",
+    "crm",
+    "nerdboard",
+    "claude-code",
+    "codex",
+    "cafe24",
+    "marketing-automation"
+  ],
+  "homepage": "https://github.com/nerdlab-dev/crm#readme",
+  "bugs": {
+    "url": "https://github.com/nerdlab-dev/crm/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nerdlab-dev/crm.git"
+  },
+  "type": "module",
+  "bin": {
+    "nerdboard-crm-mcp": "bin/nerdboard-crm-mcp.js"
+  },
+  "files": [
+    "bin",
+    "src",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "test": "node --test",
+    "check": "node --check src/cli.js && node --check src/install.js && node --check bin/nerdboard-crm-mcp.js && node --check scripts/check-public-content.js",
+    "check:public": "node scripts/check-public-content.js"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
+  "license": "MIT"
+}
