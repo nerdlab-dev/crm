@@ -2,7 +2,7 @@
 
 [![Nerdboard CRM MCP](.github/assets/header.svg)](https://nerdboard.kr)
 
-**카페24 쇼핑몰의 카카오 브랜드메시지 CRM 캠페인, Claude Code·Codex CLI에서 말로 시키면 끝나요.**
+**"휴면 고객에게 쿠폰 보내줘" — 이 한마디면 세그먼트부터 카카오 브랜드메시지 발송까지 끝나요.**
 
 [![npm version](https://img.shields.io/npm/v/%40nerdlab-dev%2Fcrm-mcp?logo=npm&color=cb3837)](https://www.npmjs.com/package/@nerdlab-dev/crm-mcp)
 [![npm downloads](https://img.shields.io/npm/dm/%40nerdlab-dev%2Fcrm-mcp)](https://www.npmjs.com/package/@nerdlab-dev/crm-mcp)
