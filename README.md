@@ -2,7 +2,7 @@
 
 [![Nerdboard CRM MCP](.github/assets/header.svg)](https://nerdboard.kr)
 
-**"휴면 고객에게 쿠폰 보내줘" — 이 한마디면 세그먼트부터 카카오 브랜드메시지 발송까지 끝나요.**
+**CRM 캠페인 세팅, AI 자동화로 5분 안에 끝내보세요.**
 
 [![npm version](https://img.shields.io/npm/v/%40nerdlab-dev%2Fcrm-mcp?logo=npm&color=cb3837)](https://www.npmjs.com/package/@nerdlab-dev/crm-mcp)
 [![npm downloads](https://img.shields.io/npm/dm/%40nerdlab-dev%2Fcrm-mcp)](https://www.npmjs.com/package/@nerdlab-dev/crm-mcp)
