@@ -3,7 +3,10 @@ import { createRequire } from "node:module";
 const require = createRequire(import.meta.url);
 const { version } = require("../package.json");
 
-const HELP = `Nerdboard CRM MCP installer
+const HELP = `Nerdboard CRM MCP 공통 설치기 연결
+
+권장 설치: npx -y @nerdlab-dev/meta-ads-mcp@latest install
+광고·CRM·소재 전체 권한을 한 번에 요청합니다.
 
 Usage:
   nerdboard-crm-mcp install [--client codex|claude]
