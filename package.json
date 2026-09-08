@@ -1,7 +1,7 @@
 {
   "name": "@nerdlab-dev/crm-mcp",
   "version": "0.1.0",
-  "description": "Installer for Nerdboard's CRM remote MCP — run CRM campaigns for your Cafe24 store from Claude Code and Codex CLI",
+  "description": "너드보드 CRM 안내와 @nerdlab-dev/meta-ads-mcp 공통 설치기 연결",
   "keywords": [
     "mcp",
     "crm",
@@ -37,9 +37,6 @@
   "engines": {
     "node": ">=20"
   },
-  "publishConfig": {
-    "access": "public",
-    "provenance": true
-  },
-  "license": "MIT"
+  "license": "MIT",
+  "private": true
 }

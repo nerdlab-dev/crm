@@ -1,167 +1,36 @@
 import assert from "node:assert/strict";
 import test from "node:test";
+import { installMcp } from "../src/install.js";
 
-import { detectClients, installMcp, selectClient } from "../src/install.js";
-
-const REMOTE_URL = "https://nerdboard.kr/mcp";
-
-function createRunner({
-  installedClients = ["codex"],
-  registrations = {},
-  addResults = {},
-} = {}) {
-  const runner = (command, args) => {
-    runner.calls.push([command, args]);
-
-    if (args[0] === "--version") {
-      return {
-        status: installedClients.includes(command) ? 0 : 1,
-        stdout: "",
-        stderr: "",
-      };
-    }
-
-    if (args[0] === "mcp" && args[1] === "get") {
-      const registration = registrations[command];
-      return registration === undefined
-        ? { status: 1, stdout: "", stderr: "no such server" }
-        : { status: 0, stdout: registration, stderr: "" };
-    }
-
-    if (args[0] === "mcp" && args.includes("add")) {
-      return (
-        addResults[command] ?? { status: 0, stdout: "added", stderr: "" }
-      );
-    }
-
-    return { status: 1, stdout: "", stderr: "unexpected command" };
-  };
-  runner.calls = [];
-  return runner;
+for (const client of [null, "codex", "claude"]) {
+  test(`공통 npm 패키지에 설치를 위임한다: ${client ?? "자동 선택"}`, () => {
+    const calls = [];
+    const result = installMcp({
+      requestedClient: client,
+      runner: (command, args) => {
+        calls.push([command, args]);
+        return { status: 0, stdout: "전체 권한 로그인 안내", stderr: "" };
+      },
+    });
+    assert.deepEqual(calls, [["npx", ["-y", "@nerdlab-dev/meta-ads-mcp@latest", "install", ...(client ? ["--client", client] : [])]]]);
+    assert.equal(result.ok, true);
+    assert.match(result.message, /전체 권한 로그인 안내/);
+  });
 }
 
-test("detects only clients whose exit code is success", () => {
-  const runner = (command) => ({
-    status: command === "codex" ? 0 : 1,
-    stdout: "",
-    stderr: "",
-  });
-
-  assert.deepEqual(detectClients(runner), ["codex"]);
-});
-
-test("selects Codex when only Codex is installed", () => {
-  assert.deepEqual(selectClient(null, ["codex"]), { client: "codex" });
-});
-
-test("selects Claude when only Claude is installed", () => {
-  assert.deepEqual(selectClient(null, ["claude"]), { client: "claude" });
-});
-
-test("requires an explicit choice when both clients are installed", () => {
-  const result = selectClient(null, ["codex", "claude"]);
-
-  assert.match(result.error, /--client/);
-});
-
-test("points to manual install when no client is installed", () => {
-  const result = selectClient(null, []);
-
-  assert.match(result.error, /manual install/);
-});
-
-test("fails when the requested client is not installed", () => {
-  const result = selectClient("claude", ["codex"]);
-
-  assert.match(result.error, /Could not find/);
-});
-
-test("adds an unregistered Codex server", async () => {
-  const runner = createRunner();
-
-  const result = await installMcp({ requestedClient: "codex", runner });
-
-  assert.equal(result.ok, true);
-  assert.deepEqual(runner.calls.at(-1), [
-    "codex",
-    ["mcp", "add", "nerdboard-crm", "--url", REMOTE_URL],
-  ]);
-  assert.match(result.message, /codex mcp login/);
-  assert.match(result.message, /nerdboard-crm/);
-});
-
-test("requests the CRM read, write, send, and asset scopes in the Codex login", async () => {
-  const runner = createRunner();
-
-  const result = await installMcp({ requestedClient: "codex", runner });
-
-  assert.match(result.message, /--scopes/);
-  assert.match(result.message, /crm:segment:read/);
-  assert.match(result.message, /crm:segment:write/);
-  assert.match(result.message, /crm:coupon:read/);
-  assert.match(result.message, /crm:coupon:write/);
-  assert.match(result.message, /crm:campaign:read/);
-  assert.match(result.message, /crm:campaign:write/);
-  assert.match(result.message, /crm:campaign:send/);
-  assert.match(result.message, /crm:strategy:read/);
-  assert.match(result.message, /ad-asset:read/);
-  assert.match(result.message, /ad-asset:write/);
-});
-
-test("adds an unregistered Claude server at user scope", async () => {
-  const runner = createRunner({ installedClients: ["claude"] });
-
-  const result = await installMcp({ requestedClient: "claude", runner });
-
-  assert.equal(result.ok, true);
-  assert.deepEqual(runner.calls.at(-1), [
-    "claude",
-    [
-      "mcp",
-      "add",
-      "--transport",
-      "http",
-      "--scope",
-      "user",
-      "nerdboard-crm",
-      REMOTE_URL,
-    ],
-  ]);
-  assert.match(result.message, /\/mcp/);
-});
-
-test("does not add when the same URL is already registered", async () => {
-  const runner = createRunner({ registrations: { codex: REMOTE_URL } });
-
-  const result = await installMcp({ requestedClient: "codex", runner });
-
-  assert.equal(result.ok, true);
-  assert.equal(runner.calls.some(([, args]) => args.includes("add")), false);
-  assert.match(result.message, /already connected/);
-});
-
-test("does not overwrite when the same name has a different URL", async () => {
-  const runner = createRunner({
-    registrations: { codex: "https://example.com/mcp" },
-  });
-
-  const result = await installMcp({ requestedClient: "codex", runner });
-
+test("공통 설치기가 실패하면 성공으로 보고하지 않는다", () => {
+  const result = installMcp({ runner: () => ({ status: 7, stdout: "", stderr: "패키지 설치 실패" }) });
   assert.equal(result.ok, false);
-  assert.equal(runner.calls.some(([, args]) => args.includes("add")), false);
-  assert.match(result.message, /left unchanged/);
+  assert.match(result.message, /패키지 설치 실패/);
 });
 
-test("returns the exit code and error when the add command fails", async () => {
-  const runner = createRunner({
-    addResults: {
-      codex: { status: 7, stdout: "", stderr: "permission denied" },
-    },
-  });
-
-  const result = await installMcp({ requestedClient: "codex", runner });
-
+test("npx를 실행할 수 없을 때 오류를 보여준다", () => {
+  const result = installMcp({ runner: () => ({ status: null, error: new Error("npx ENOENT") }) });
   assert.equal(result.ok, false);
-  assert.match(result.message, /Exit code 7/);
-  assert.match(result.message, /permission denied/);
+  assert.match(result.message, /npx ENOENT/);
+});
+
+test("지원하지 않는 클라이언트는 실행 전에 거부한다", () => {
+  const result = installMcp({ requestedClient: "unknown", runner: () => assert.fail("실행하면 안 됩니다") });
+  assert.equal(result.ok, false);
 });

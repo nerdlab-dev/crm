@@ -4,10 +4,10 @@
 
 **CRM 캠페인 세팅, AI 자동화로 5분 안에 끝내보세요.**
 
-[![npm version](https://img.shields.io/npm/v/%40nerdlab-dev%2Fcrm-mcp?logo=npm&color=cb3837)](https://www.npmjs.com/package/@nerdlab-dev/crm-mcp)
-[![npm downloads](https://img.shields.io/npm/dm/%40nerdlab-dev%2Fcrm-mcp)](https://www.npmjs.com/package/@nerdlab-dev/crm-mcp)
+[![npm version](https://img.shields.io/npm/v/%40nerdlab-dev%2Fmeta-ads-mcp?logo=npm&color=cb3837)](https://www.npmjs.com/package/@nerdlab-dev/meta-ads-mcp)
+[![npm downloads](https://img.shields.io/npm/dm/%40nerdlab-dev%2Fmeta-ads-mcp)](https://www.npmjs.com/package/@nerdlab-dev/meta-ads-mcp)
 [![CI](https://github.com/nerdlab-dev/crm/actions/workflows/ci.yml/badge.svg)](https://github.com/nerdlab-dev/crm/actions/workflows/ci.yml)
-[![Node.js ≥ 20](https://img.shields.io/node/v/%40nerdlab-dev%2Fcrm-mcp?logo=nodedotjs&logoColor=white)](https://nodejs.org)
+[![Node.js ≥ 20](https://img.shields.io/node/v/%40nerdlab-dev%2Fmeta-ads-mcp?logo=nodedotjs&logoColor=white)](https://nodejs.org)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE)
 
 [![Works with Claude Code](https://img.shields.io/badge/Works_with-Claude_Code-4A4A4A?style=flat-square)](https://claude.com/claude-code)
@@ -20,7 +20,7 @@
 
 CRM 캠페인 하나를 보내려면 세그먼트·쿠폰·메시지를 관리자 화면에서 일일이 클릭해야 해요. 너드보드의 호스팅 원격 MCP를 연결하면 AI 에이전트가 대신 해줘요 — **서버 설치도, 내 컴퓨터에 API 키를 둘 일도 없어요**.
 
-이 저장소는 얇은 MIT 라이선스 설치기예요. 모든 CRM 기능은 너드보드가 운영하는 서버에서 실행돼요.
+이 저장소는 CRM 사용 안내를 제공해요. 설치는 광고·CRM 공통 패키지 `@nerdlab-dev/meta-ads-mcp`로 진행해요. 모든 CRM 기능은 너드보드 서버에서 실행돼요. 별도 CRM npm 패키지는 설치하거나 배포하지 않아요.
 
 ## 무엇을 할 수 있나요
 
@@ -37,14 +37,14 @@ CRM 캠페인 하나를 보내려면 세그먼트·쿠폰·메시지를 관리�
 **Node.js 20+**와 **Claude Code** 또는 **Codex CLI**가 필요해요. 설정은 2분이면 끝나요.
 
 ```bash
-npx -y @nerdlab-dev/crm-mcp@latest install
+npx -y @nerdlab-dev/meta-ads-mcp@latest install
 ```
 
 두 클라이언트가 모두 설치되어 있다면 하나를 골라 주세요:
 
 ```bash
-npx -y @nerdlab-dev/crm-mcp@latest install --client claude
-npx -y @nerdlab-dev/crm-mcp@latest install --client codex
+npx -y @nerdlab-dev/meta-ads-mcp@latest install --client claude
+npx -y @nerdlab-dev/meta-ads-mcp@latest install --client codex
 ```
 
 그다음 로그인하세요:
@@ -53,14 +53,32 @@ npx -y @nerdlab-dev/crm-mcp@latest install --client codex
 - **Codex CLI** — 아래를 실행해요:
 
   ```bash
-  codex mcp login \
-    --scopes crm:segment:read,crm:segment:write,crm:coupon:read,crm:coupon:write,crm:campaign:read,crm:campaign:write,crm:campaign:send,crm:strategy:read,ad-asset:read,ad-asset:write \
-    nerdboard-crm
+  codex mcp login nerdboard-meta-ads
   ```
 
-로그인 과정에서 너드보드 워크스페이스와 권한을 직접 고를 수 있어요. 구독이나 쇼핑몰 연동이 아직 없다면 너드보드가 화면에서 안내해 줘요.
+로그인 과정에서 너드보드 워크스페이스를 고르고 광고·CRM·소재 전체 권한을 한 번에 승인해요. 구독이나 쇼핑몰 연동이 아직 없다면 너드보드가 화면에서 안내해 줘요.
 
 이게 전부예요 — 이제 에이전트에게 캠페인을 부탁해 보세요.
+
+## 전체 권한 연결
+
+이미 배포된 공통 패키지를 그대로 사용해요. 기존 버전이 출력하는 `--scopes` 포함 로그인 예시 대신, 위의 `codex mcp login nerdboard-meta-ads` 명령을 사용해요. 일부 기능으로 권한을 제한하지 않아요.
+
+Meta 광고와 CRM은 같은 MCP 서버를 사용해요. 기본 로그인은 서버가 지원하는 광고·CRM·소재 전체 권한을 한 번에 요청해요. 설치 명령에 일부 권한을 고정하지 않아요. 실제 작업에는 계정·몰·구독 권한 검사가 적용돼요.
+
+기존에 일부 권한만 승인했다면 아래 명령으로 다시 로그인해요.
+
+```bash
+codex mcp logout nerdboard-meta-ads
+codex mcp login nerdboard-meta-ads
+```
+
+Claude Code는 `/mcp`에서 재인증해요. `invalid_scope` 오류가 계속되면 기존 OAuth 클라이언트 등록정보가 남아 있는 상태예요. 기존 연결 주소를 확인한 뒤 연결을 제거하고 아래 공통 설치 명령으로 재등록해요. Claude Code는 `/mcp`의 인증 초기화도 함께 진행해요.
+
+```bash
+npx -y @nerdlab-dev/meta-ads-mcp@latest install
+```
+ 기존 `nerdboard-crm` 연결이 있다면 같은 서버를 가리키는 공통 연결을 사용하고, 기존 설정을 자동 삭제하지 않아요.
 
 ## 동작 방식
 
@@ -71,14 +89,14 @@ flowchart LR
     server -- "카페24 API + 카카오 브랜드메시지" --> store["내 쇼핑몰 · 고객"]
 ```
 
-설치기는 각 제품의 공식 `mcp add` 명령으로 MCP 클라이언트에 `nerdboard-crm`을 등록해요. 모든 CRM 동작은 너드보드가 운영하는 서버에서 실행되고, 서버가 카페24 쇼핑몰과 카카오 브랜드메시지 채널을 대신 다뤄요. 사용하려면 너드보드 계정, 활성 구독, 연동된 카페24 쇼핑몰이 필요해요.
+설치기는 각 제품의 공식 `mcp add` 명령으로 MCP 클라이언트에 `nerdboard-meta-ads`을 등록해요. 모든 CRM 동작은 너드보드가 운영하는 서버에서 실행되고, 서버가 카페24 쇼핑몰과 카카오 브랜드메시지 채널을 대신 다뤄요. 사용하려면 너드보드 계정, 활성 구독, 연동된 카페24 쇼핑몰이 필요해요.
 
 ## 보안과 투명성
 
 설치기가 하는 일:
 
 - Codex CLI와 Claude Code가 설치되어 있는지 확인해요.
-- `nerdboard-crm` 연결이 이미 있는지 확인해요.
+- `nerdboard-meta-ads` 연결이 이미 있는지 확인해요.
 - 제품의 공식 `mcp add` 명령으로 연결을 등록해요.
 - 같은 연결이 이미 있으면 아무것도 건드리지 않아요.
 - 같은 이름이 다른 URL을 가리키면 덮어쓰지 않고 거부해요.
@@ -99,13 +117,13 @@ flowchart LR
 Claude Code:
 
 ```bash
-claude mcp add --transport http --scope user nerdboard-crm https://nerdboard.kr/mcp
+claude mcp add --transport http --scope user nerdboard-meta-ads https://nerdboard.kr/mcp
 ```
 
 Codex CLI:
 
 ```bash
-codex mcp add nerdboard-crm --url https://nerdboard.kr/mcp
+codex mcp add nerdboard-meta-ads --url https://nerdboard.kr/mcp
 ```
 
 원격 MCP를 지원하는 다른 클라이언트(Cursor 등)는 URL을 직접 등록하면 돼요:
@@ -125,7 +143,7 @@ npm pack --dry-run
 
 ## 라이선스
 
-이 저장소의 CLI 소스는 [MIT 라이선스](./LICENSE)예요. 너드보드 서비스와 원격 MCP 서버는 별도의 서비스 약관을 따라요.
+기존 CRM CLI 소스는 공통 설치 패키지 실행만 위임해요. 이 소스는 [MIT 라이선스](./LICENSE)예요. 너드보드 서비스와 원격 MCP 서버는 별도의 서비스 약관을 따라요.
 
 ## 상표
 
@@ -134,3 +152,14 @@ OpenAI와 Codex는 OpenAI의 상표예요. Claude와 Claude Code는 Anthropic, P
 ---
 
 <p align="center"><a href="https://nerdboard.kr">너드보드</a>가 만들었어요</p>
+
+## npm 설치가 실패할 때
+
+CRM도 `@nerdlab-dev/meta-ads-mcp`를 설치해요. 별도 `@nerdlab-dev/crm-mcp` 패키지는 사용하지 않아요. 공통 npm 패키지를 받을 수 없는 환경에서는 같은 공개 저장소로 설치할 수 있어요. Git이 설치되어 있어야 해요.
+
+```bash
+npx -y github:nerdlab-dev/meta-ads-mcp install --client codex
+# Claude Code를 사용하면 마지막 인자를 claude로 바꿔 주세요.
+```
+
+npm 없이 직접 연결하려면 위의 수동 설치 명령을 사용해요. 어느 방식이든 같은 서버에서 전체 권한을 한 번에 요청해요.
